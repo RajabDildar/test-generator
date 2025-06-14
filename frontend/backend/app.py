@@ -9,8 +9,8 @@ import os
 load_dotenv()
 
 # Verify API key is present
-if not os.getenv('HUGGINGFACE_API_KEY'):
-    raise ValueError("HUGGINGFACE_API_KEY not found in environment variables")
+if not os.getenv('GROQ_API_KEY'):
+    raise ValueError("GROQ_API_KEY not found in environment variables")
 
 app = Flask(__name__)
 CORS(app)
