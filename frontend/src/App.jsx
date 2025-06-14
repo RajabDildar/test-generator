@@ -1,40 +1,56 @@
-import { useState } from 'react'
-import './App.css'
+import { useState, useEffect } from "react";
+import "./App.css";
 
 function App() {
-  const [code, setCode] = useState('')
-  const [useCase, setUseCase] = useState('')
-  const [tests, setTests] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [code, setCode] = useState("");
+  const [useCase, setUseCase] = useState("");
+  const [tests, setTests] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.body.className = newTheme;
+  };
+
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
 
   const generateTests = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const response = await fetch('http://localhost:5000/api/generate-tests', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/api/generate-tests", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ code, useCase }),
-      })
-      
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error)
-      
-      setTests(data.tests)
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+
+      setTests(data.tests);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="container">
-      <h1>AI Test Generator</h1>
-      
+      <header className="header">
+        <h1>🧪 AI Test Generator</h1>
+        <button className="theme-toggle" onClick={toggleTheme}>
+          {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+        </button>
+      </header>
+
       <div className="input-section">
         <h2>Code Input</h2>
         <textarea
@@ -55,11 +71,8 @@ function App() {
         />
       </div>
 
-      <button 
-        onClick={generateTests}
-        disabled={loading || !code || !useCase}
-      >
-        {loading ? 'Generating...' : 'Generate Tests'}
+      <button onClick={generateTests} disabled={loading || !code || !useCase}>
+        {loading ? "Generating..." : "Generate Tests"}
       </button>
 
       {error && <div className="error">{error}</div>}
@@ -71,7 +84,7 @@ function App() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
