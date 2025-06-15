@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
   const [code, setCode] = useState("");
@@ -8,6 +9,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState("light");
+  const outputRef = useRef(null);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -19,11 +21,17 @@ function App() {
     document.body.className = theme;
   }, [theme]);
 
+  useEffect(() => {
+    if (tests && outputRef.current) {
+      outputRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [tests]);
+
   const generateTests = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:5000/api/generate-tests", {
+      const response = await fetch(`${BACKEND_URL}/api/generate-tests`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +86,7 @@ function App() {
       {error && <div className="error">{error}</div>}
 
       {tests && (
-        <div className="output-section">
+        <div className="output-section" ref={outputRef}>
           <h2>Generated Tests</h2>
           <pre>{tests}</pre>
         </div>
